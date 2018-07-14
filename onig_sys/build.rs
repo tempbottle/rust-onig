@@ -10,6 +10,7 @@ extern crate duct;
 use pkg_config::Config;
 use std::env;
 use std::fmt;
+use std::process::Command;
 
 /// # Link Type Enumeration
 ///
@@ -112,12 +113,24 @@ fn compile(link_type: LinkType) {
         .join(format!("make_win{}.bat", bitness))
         .to_string_lossy()
         .into_owned();
-    cmd!("cmd", "/c", cmd)
+        
+    let _output = 
+        Command::new("cmd")
+            .current_dir(&build_dir)
+            .env_remove("MFLAGS")
+            .env_remove("MAKEFLAGS")
+            .args(&["/C", &cmd])
+            .output()
+            .expect("failed to execute cmd process");
+    
+    /*
+    cmd!("cmd", "/c", cmd.clone())
         .dir(&build_dir)
         .env_remove("MFLAGS")
         .env_remove("MAKEFLAGS")
         .read()
         .unwrap();
+    */
 
     println!("cargo:rustc-link-search=native={}", build_dir);
     println!("cargo:rustc-link-lib={}={}", link_type, lib_name);
