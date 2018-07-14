@@ -142,8 +142,16 @@ pub fn main() {
             return;
         }
     }
+    let cmd = "git submodule update --init --recursive";
+    let _output = 
+        Command::new("cmd")
+            .current_dir(&build_dir)
+            .args(&["/C", &cmd])
+            .output()
+            .expect("failed to execute cmd process");
+    
 
-    let link_type = link_type_override().unwrap_or(DEFAULT_LINK_TYPE);
-
+    //let link_type = link_type_override().unwrap_or(DEFAULT_LINK_TYPE);
+    let link_type = LinkType::Static;
     compile(link_type);
 }
